@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda de Coches</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Tienda de Coches</h1>
+  
+  <!-- Selector de Moneda -->
+  <div>
+    <label for="currency">Moneda: </label>
+    <select id="currency">
+      <option value="EUR" selected>EUR</option>
+      <option value="USD">USD</option>
+      <option value="GBP">GBP</option>
+    </select>
+  </div>
+
+  <!-- Lista de Productos -->
+  <div class="product-list" id="productList"></div>
+
+  <!-- Botón Ver Carrito -->
+  <button id="viewCartBtn">Ver carrito</button>
+
+  <!-- Sidebar del Carrito -->
+  <div class="sidebar" id="cartSidebar">
+    <button id="closeSidebar">Cerrar</button>
+    <h3>Carrito</h3>
+    <ul id="cartItems"></ul>
+    <div class="total" id="totalAmount">Total: 0 €</div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

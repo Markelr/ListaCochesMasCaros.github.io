@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrito de Compras de Coches</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1, h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    ul {
+      padding: 0;
+    }
+    li {
+      list-style: none;
+      margin-bottom: 15px;
+    }
+    .product, .cart-item {
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    button {
+      padding: 5px 10px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .cart-item {
+      margin-bottom: 10px;
+    }
+    .pagination {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .pagination button {
+      margin: 0 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1>Lista de Coches</h1>
+    <ul>
+      <li v-for="product in paginatedProducts" :key="product.id" class="product">
+        <h2>{{ product.Name }}</h2>
+        <p>Precio: {{ product.price }} €</p>
+        <img :src="product.image" :alt="product.Name" weidth="150px" height="150px">
+        <br>
+        <button @click="addToCart(product)">Añadir al carrito</button>
+      </li>
+    </ul>
+
+    <div class="pagination">
+      <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
+      <span>Página {{ currentPage }} de {{ totalPages }}</span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">Siguiente</button>
+    </div>
+
+    <h2>Carrito</h2>
+    <ul v-if="cart.length > 0">
+      <li v-for="item in cart" :key="item.id" class="cart-item">
+        {{ item.Name }} - Cantidad: {{ item.quantity }} - Total: {{ (item.quantity * item.price).toFixed(2) }} €
+      </li>
+    </ul>
+    <p v-else>El carrito está vacío</p>
+
+    <p v-if="totalPrice > 0">Total del carrito: {{ totalPrice.toFixed(2) }} €</p>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          products: [
+            { id: 1, Name: 'Rolls Royce Boat Tail', price: 23000000, image: "img/rollsroyceboattail.webp"},
+            { id: 2, Name: 'Pagani Zonda HP Barchetta ',price: 15400000, image: "img/paganizondahpbarchetta.webp"},
+            { id: 3, Name: 'Rolls Royce Sweptail', price: 11500000, image: "img/rollsroycesweptail.webp" },
+            { id: 4, Name: 'Bugatti Voiture Noire ', price: 11000000, image: "img/bugattivoiturenoire.webp"},
+            { id: 5, Name: 'Bugatti Chiron Profilée',price: 9790000, image: "img/bugattichironprofile.webp"},
+            { id: 6, Name: 'Bugatti Centodieci ',price: 8000000,image: "img/bugatticentodieci.webp" },
+            { id: 7, Name: 'Mercedes Maybach Exelero',price: 7200000, image: "img/maybachexelero.webp"},
+            { id: 8, Name: 'Pagani Huayra Codalunga',price: 7000000, image: "img/paganihuayracodalunga.webp"},
+            { id: 9, Name: 'Pagani Huayara Tricolore',price: 5500000, image: "img/paganihuayratricolore.webp"},
+            { id: 10, Name: 'Bugatti Mistral ',price: 5000000, image: "img/bugattimistral.webp"},
+            { id: 11, Name: 'Bugatti Divo ',price: 5000000, image: "img/bugattidivo.webp"},
+            { id: 12, Name: 'Pagani Huyara Imola',price: 5000000, image: "img/paganihuyaraimola.webp"},
+            { id: 13, Name: 'Pininfarina B95',price: 4400000, image: "img/pininfarinab95.webp" },
+            { id: 14, Name: 'Koenigsegg CCXR Trevita',price: 4300000, image: "img/KoenigseggCCXRTrevita.webp"},
+            { id: 15, Name: 'Bugatti Bolide ',price: 4000000, image: "img/bugattibolide.webp"},
+            { id: 16, Name: 'Bugatti Tourbillon ',price: 3700000, image: "img/bugattitourbillon.webp"},
+            { id: 17, Name: 'GMA T.50S Niki Lauda',price: 3600000, image: "img/gmat5.50sNikiLauda.webp"},
+            { id: 18, Name: 'Bugatti Chiron Super Sport 300+ ',price: 3500000, image: "img/bugattichironsupersport300.webp"},
+            { id: 19, Name: 'Koenigsegg CC850  ',price: 3500000, image: "img/KoenigseggCC850.webp"},
+            { id: 20, Name: 'Lamborghini Veneno Roadster ',price: 3300000, image: "img/lamborghinivenenoroadster.webp"},
+            { id: 21, Name: 'Lamborghini Sián ',price: 3300000, image: "img/lamborghinisian.webp"},
+            { id: 22, Name: 'Bugatti Chiron Pur Sport',price: 3200000, image: "img/bugattichironpursport.webp"},
+            { id: 23, Name: 'Pagani Utopia Roadster ',price: 3100000, image: "img/PaganiUtopiaRoadster.webp"},
+            { id: 24, Name: 'McLaren Solus GT ',price: 3100000, image: "img/MCLarenSolusGT.webp"},
+            { id: 25, Name: 'Aston Martin Valkyrie ',price: 3000000, image: "img/astonmartinvalkyriespider.webp"},
+
+          ],
+          cart: [],
+          currentPage: 1,
+          itemsPerPage: 4,
+        };
+      },
+      computed: {
+        totalPages() {
+          return Math.ceil(this.products.length / this.itemsPerPage);
+        },
+        paginatedProducts() {
+          const start = (this.currentPage - 1) * this.itemsPerPage;
+          const end = start + this.itemsPerPage;
+          return this.products.slice(start, end);
+        },
+        totalPrice() {
+          return this.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        },
+      },
+      methods: {
+        addToCart(product) {
+          const existingItem = this.cart.find((item) => item.id === product.id);
+          if (existingItem) {
+            existingItem.quantity += 1;
+          } else {
+            this.cart.push({ ...product, quantity: 1 });
+          }
+        },
+        nextPage() {
+          if (this.currentPage < this.totalPages) {
+            this.currentPage++;
+          }
+        },
+        prevPage() {
+          if (this.currentPage > 1) {
+            this.currentPage--;
+          }
+        },
+
+      },
+    }).mount('#app');
+  </script>
+</body>
+</html>
